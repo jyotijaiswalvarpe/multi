@@ -8,6 +8,19 @@ before_install:
 script:
   - docker run -e CI=true jyotijaiswal88/react-test npm test
 
+deploy:
+  provider: elasticbeanstalk
+  region: "us-east-2"
+  app: "multi-docker"
+  env: "MultiDocker-env"
+  bucket_name: "elasticbeanstalk-us-east-2-493059561792"
+  bucket_path: "multi-docker"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key:
+    secure: "$AWS_SECRET_KEY"
+    
 after success:
   - docker build -t jyotijaiswal88/multi-client ./client
   - docker build -t jyotijaiswal88/multi-nginx ./nginx
