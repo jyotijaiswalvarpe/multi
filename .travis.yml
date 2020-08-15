@@ -8,6 +8,19 @@ before_install:
 script:
   - docker run -e CI=true jyotijaiswal88/react-test npm test
 
+after success:
+  - docker build -t jyotijaiswal88/multi-client ./client
+  - docker build -t jyotijaiswal88/multi-nginx ./nginx
+  - docker build -t jyotijaiswal88/multi-server ./server
+  - docker build -t jyotijaiswal88/multi-worker ./worker
+  # Log in to Docker CLI
+  - echo "$DOCKER_PASSWORD" | docker login -u "$Docker_ID" --password-stdin
+  # take images and push to docker hub
+  - docker push jyotijaiswal88/multi-client
+  - docker push jyotijaiswal88/multi-nginx
+  - docker push jyotijaiswal88/multi-server
+  - docker push jyotijaiswal88/multi-worker
+
 deploy:
   provider: elasticbeanstalk
   region: "us-east-2"
@@ -21,15 +34,3 @@ deploy:
   secret_access_key:
     secure: "$AWS_SECRET_KEY"
     
-after success:
-  - docker build -t jyotijaiswal88/multi-client ./client
-  - docker build -t jyotijaiswal88/multi-nginx ./nginx
-  - docker build -t jyotijaiswal88/multi-server ./server
-  - docker build -t jyotijaiswal88/multi-worker ./worker
-  # Log in to Docker CLI
-  - echo "$DOCKER_PASSWORD" | docker login -u "$Docker_ID" --password-stdin
-  # take images and push to docker hub
-  - docker push jyotijaiswal88/multi-client
-  - docker push jyotijaiswal88/multi-nginx
-  - docker push jyotijaiswal88/multi-server
-  - docker push jyotijaiswal88/multi-worker
